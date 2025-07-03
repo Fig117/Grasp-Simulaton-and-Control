@@ -9,26 +9,24 @@ model = mujoco.MjModel.from_xml_path("/home/guan/Desktop/mujoco_menagerie-main/w
 data = mujoco.MjData(model)
 
 # --- PID control parameters ---
-Kp = np.array([50.0] * 16)   # TODO：可调节 P
-Kd = np.array([2.0] * 16)    # TODO：可调节 D
-Ki = np.array([0.0] * 16)    # TODO：如需 I 项，可改为非零
+Kp = np.array([50.0] * 16)   # TODO: adjustable P gains
+Kd = np.array([2.0] * 16)    # TODO: adjustable D gains
+Ki = np.array([0.0] * 16)    # TODO: integral gains, set to non-zero if needed
 
 # --- Get joint indices by name ---
 joint_names = ["ffj0", "ffj1", "ffj2", "ffj3", 
                "mfj0", "mfj1", "mfj2", "mfj3",
                "rfj0", "rfj1", "rfj2", "rfj3",
                "thj0", "thj1", "thj2", "thj3"] 
-joint_ids = [model.joint(name).qposadr for name in joint_names]
+joint_qpos_ids = [model.joint(name).qposadr for name in joint_names]
+joint_dof_ids = [int(model.joint(name).dofadr) for name in joint_names]
 
 # --- Compute dynamic q_desired using Jacobian ---
-def compute_q_desired_from_end_effector_targets(model, data, joint_ids):
-    """
-    Compute q_desired from fingertip target positions using Jacobian-based IK.
-    """
+def compute_q_desired_from_end_effector_targets(model, data, joint_qpos_ids, joint_dof_ids):
     q_desired = np.zeros(16)
     finger_tips = ["ff_tip", "mf_tip", "rf_tip", "th_tip"]
     tip_targets = {
-        "ff_tip": np.array([0.02, -0.05, 0.1]),  # TODO：目标接触点
+        "ff_tip": np.array([0.02, -0.05, 0.1]),
         "mf_tip": np.array([0.02,  0.00, 0.1]),
         "rf_tip": np.array([0.02,  0.05, 0.1]),
         "th_tip": np.array([-0.02, 0.00, 0.1])
@@ -38,11 +36,20 @@ def compute_q_desired_from_end_effector_targets(model, data, joint_ids):
         try:
             current_pos = data.body(tip).xpos.copy()
             delta_x = tip_targets[tip] - current_pos
+            delta_x = np.asarray(delta_x).flatten()
+
             J_pos = np.zeros((3, model.nv))
             mujoco.mj_jacBodyCom(model, data, J_pos, None, model.body(tip).id)
-            J_finger = J_pos[:, joint_ids[i*4:(i+1)*4]]
+            idxs = np.array(joint_dof_ids[i*4:(i+1)*4], dtype=int)
+            J_finger = J_pos[:, idxs]
             dq = J_finger.T @ delta_x
-            q_desired[i*4:(i+1)*4] = data.qpos[joint_ids[i*4:(i+1)*4]] + dq
+
+            q_segment = np.array([data.qpos[j] for j in joint_qpos_ids[i*4:(i+1)*4]]).flatten()
+
+            print(f"tip={tip}, q_segment shape: {q_segment.shape}, dq shape: {dq.shape}")
+
+            q_desired[i*4:(i+1)*4] = q_segment + dq
+
         except Exception as e:
             print(f"Error computing q_desired for {tip}: {e}")
 
@@ -59,19 +66,19 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         mujoco.mj_step(model, data)
 
         # --- Dynamically compute q_desired ---
-        q_desired = compute_q_desired_from_end_effector_targets(model, data, joint_ids)
+        q_desired = compute_q_desired_from_end_effector_targets(model, data, joint_qpos_ids, joint_dof_ids)
 
         # --- Read joint state and compute PID ---
-        q = data.qpos[joint_ids]
-        qd = data.qvel[joint_ids]
-        error = q_desired - q
+        q = np.array([data.qpos[i] for i in joint_qpos_ids], dtype=np.float64).flatten()
+        qd = np.array([data.qvel[i] for i in joint_qpos_ids], dtype=np.float64).flatten()
+        error = q_desired.flatten() - q
         integral_error += error * model.opt.timestep
         torque = Kp * error - Kd * qd + Ki * integral_error
         data.ctrl[:16] = torque
 
         # --- Contact and stability monitoring ---
         object_pos = data.body("object").xpos.copy()
-        object_vel = data.body("object").xvelp.copy()
+        object_vel = data.cvel[model.body("object").id][:3]
         print(f"[{step}] Object position: {object_pos}, velocity norm: {np.linalg.norm(object_vel):.4f}")
 
         contact_with_object = False

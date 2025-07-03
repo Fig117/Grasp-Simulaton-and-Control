@@ -48,29 +48,38 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         mujoco.mj_step(model, data)
 
         # --- Joint control part ---
-        q = data.qpos[joint_ids]
-        qd = data.qvel[joint_ids]
-        joint_torque = Kp_joint * (q_desired - q) - Kd_joint * qd
+        q = np.asarray(data.qpos[joint_ids]).reshape(16,)
+        qd = np.asarray(data.qvel[joint_ids]).reshape(16,)
+        q_des = np.asarray(q_desired).reshape(16,)
+        joint_torque = Kp_joint * (q_des - q) - Kd_joint * qd
 
         # --- Force control part ---
         torque_force = np.zeros(16)
+
         for i, name in enumerate(fingers):
             try:
                 J_pos = np.zeros((3, model.nv))
                 mujoco.mj_jacBodyCom(model, data, J_pos, None, model.body(name).id)
-                J_finger = J_pos[:, joint_ids[i*4:(i+1)*4]]
-                f_tip = f_desired * force_dirs[name]
-                torque_force[i*4:(i+1)*4] += J_finger.T @ f_tip
+
+                finger_joint_ids = joint_ids[i*4:(i+1)*4]  
+                J_finger = J_pos[:, finger_joint_ids]      
+                f_tip = f_desired * force_dirs[name]       
+                tau = np.dot(J_finger.T, f_tip).flatten()            
+                for j, idx in enumerate(finger_joint_ids):
+                    torque_force[idx] += tau[j]
+
             except Exception as e:
                 print(f"Jacobian error at {name}: {e}")
 
         # --- Total torque ---
+        joint_torque = np.asarray(joint_torque).reshape(16,)
+        torque_force = np.asarray(torque_force).reshape(16,)
         total_torque = joint_torque + Kf * torque_force
         data.ctrl[:16] = total_torque
 
         # --- Monitor object state and stability ---
         object_pos = data.body("object").xpos.copy()
-        object_vel = data.body("object").xvelp.copy()
+        object_vel = data.cvel[model.body("object").id, :3].copy()
         print(f"[{step}] Object position: {object_pos}, velocity norm: {np.linalg.norm(object_vel):.4f}")
 
         contact_with_object = False
