@@ -2,32 +2,31 @@ import numpy as np
 import mujoco
 import mujoco.viewer
 
-
 model = mujoco.MjModel.from_xml_path("scene_right.xml")
 data = mujoco.MjData(model)
 
-# actuator name1
+# actuator names
 actuator_names = [
     "ffa0", "ffa1", "ffa2", "ffa3",
     "mfa0", "mfa1", "mfa2", "mfa3",
     "rfa0", "rfa1", "rfa2", "rfa3",
     "tha0", "tha1", "tha2", "tha3"
 ]
-
 actuator_ids = [model.actuator(name).id for name in actuator_names]
 
 # 目标角度（手指闭合）
 target_positions = np.array([
-    0.0,   0.879, 0.946, 1.33,   # ffa0 ~ ffa3（First finger）
-    0.0,   0.752, 0.88,  0.622,  # mfa0 ~ mfa3（Middle finger）
-    0.0,   1.06,  0.589, 1.32,   # rfa0 ~ rfa3（Ring finger）
-    1.38,  0.592, 0.407, 0.788   # tha0 ~ tha3（Thumb）
+    0.1,  0.8,  1.1,  1.3,     # ffa0 ~ ffa3
+    0.1,  0.75, 1.0,  1.2,     # mfa0 ~ mfa3
+    0.1,  0.8,  1.0,  1.2,     # rfa0 ~ rfa3
+    1.3,  0.6,  0.5,  0.85     # tha0 ~ tha3
 ])
+
 
 
 # 初始化控制值
 data.ctrl[:] = 0.0
-speed = 0.01  # 收拢速度
+speed = 0.005  # 收拢速度
 
 def check_grasp(model, data):
     object_geom_name = "object_geom"
@@ -50,9 +49,18 @@ def check_grasp(model, data):
     for i in range(data.ncon):
         contact = data.contact[i]
         g1, g2 = contact.geom1, contact.geom2
-        g1_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, g1)
-        g2_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, g2)
-        print("🟡 发生接触：", g1_name, "<-->", g2_name)
+
+        def describe_geom(gid):
+            name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, gid)
+            if name is None:
+                body_id = model.geom_bodyid[gid]
+                body_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
+                pos = data.geom_xpos[gid]
+                return f"[id={gid}, name=None, body={body_name}, pos={pos}]"
+            else:
+                return f"[id={gid}, name={name}]"
+
+        print("🟡 发生接触：", describe_geom(g1), "<-->", describe_geom(g2))
 
         if (g1 == object_gid and g2 in fingertip_gids) or (g2 == object_gid and g1 in fingertip_gids):
             contact_count += 1
@@ -72,6 +80,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
 
         mujoco.mj_step(model, data)
 
+        # 每10步检查一次抓取状态
         if data.time * model.opt.timestep % 10 < 1e-5:
             if check_grasp(model, data):
                 print("✅ 成功抓住球！")
