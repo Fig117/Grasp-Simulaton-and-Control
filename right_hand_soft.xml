@@ -70,6 +70,7 @@
           </default>
         </default>
       </default>
+
       <!-- Contact Models -->
       <default class="soft_finger">
         <geom type="capsule" size="0.012 0.008" contype="1" conaffinity="1"
@@ -85,7 +86,6 @@
         <geom type="capsule" size="0.012 0.008" contype="1" conaffinity="1"
               friction="0 0 0" solref="0.02 1" solimp="0.95 0.95 0.01"/>
       </default>
-      
 
       <default class="base">
         <joint axis="0 0 1" range="-0.47 0.47"/>
@@ -143,28 +143,27 @@
     <body name="palm" quat="0 1 0 1" childclass="allegro_right">
       <!-- <inertial mass="0.4154" pos="0 0 0.0475" diaginertia="1e-4 1e-4 1e-4"/> -->
       <geom class="palm_visual" mesh="base_link"/>
-      <geom class="palm_collision"/>
+      <geom name="palm_geom" class="palm_collision"/>
       <!-- First finger -->
       <body name="ff_base" pos="0 0.0435 -0.001542" quat="0.999048 -0.0436194 0 0">
         <joint name="ffj0" class="base"/>
         <geom class="base_visual"/>
-        <geom class="base_collision"/>
+        <geom name="ff_base_geom" class="base_collision"/>
         <body name="ff_proximal" pos="0 0 0.0164">
           <joint name="ffj1" class="proximal"/>
           <geom class="proximal_visual"/>
-          <geom class="proximal_collision"/>
+          <geom name="ff_proximal_geom" class="proximal_collision"/>
           <body name="ff_medial" pos="0 0 0.054">
             <joint name="ffj2" class="medial"/>
             <geom class="medial_visual"/>
-            <geom class="medial_collision"/>
+            <geom name="ff_medial_geom" class="medial_collision"/>
             <body name="ff_distal" pos="0 0 0.0384">
               <joint name="ffj3" class="distal"/>
               <geom class="distal_visual"/>
-              <geom class="distal_collision"/>
+              <geom name="ff_distal_geom" class="distal_collision"/>
               <body name="ff_tip">
                 <geom class="fingertip_visual"/>
-                <geom class="soft_finger" pos="0 0 0.019"/>
-                <!--可把soft_finger切换成其他两种模式-->
+                <geom name="ff_tip" class="soft_finger" pos="0 0 0.019" contype="1" conaffinity="1"/>
               </body>
             </body>
           </body>
@@ -174,22 +173,22 @@
       <body name="mf_base" pos="0 0 0.0007">
         <joint name="mfj0" class="base"/>
         <geom class="base_visual"/>
-        <geom class="base_collision"/>
+        <geom name="mf_base_geom" class="base_collision"/>
         <body name="mf_proximal" pos="0 0 0.0164">
           <joint name="mfj1" class="proximal"/>
           <geom class="proximal_visual"/>
-          <geom class="proximal_collision"/>
+          <geom name="mf_proximal_geom"class="proximal_collision"/>
           <body name="mf_medial" pos="0 0 0.054">
             <joint name="mfj2" class="medial"/>
             <geom class="medial_visual"/>
-            <geom class="medial_collision"/>
+            <geom name="mf_medial_geom" class="medial_collision"/>
             <body name="mf_distal" pos="0 0 0.0384">
               <joint name="mfj3" class="distal"/>
               <geom class="distal_visual"/>
-              <geom class="distal_collision"/>
+              <geom name="mf_distal_geom" class="distal_collision"/>
               <body name="mf_tip">
-                <geom class="fingertip_visual"/>
-                <geom class="soft_finger" pos="0 0 0.019"/>
+                <geom  class="fingertip_visual"/>
+                <geom name="mf_tip" class="soft_finger" pos="0 0 0.019"contype="1" conaffinity="1"/>
               </body>
             </body>
           </body>
@@ -199,22 +198,22 @@
       <body name="rf_base" pos="0 -0.0435 -0.001542" quat="0.999048 0.0436194 0 0">
         <joint name="rfj0" class="base"/>
         <geom class="base_visual"/>
-        <geom class="base_collision"/>
+        <geom name="rf_base_geom" class="base_collision"/>
         <body name="rf_proximal" pos="0 0 0.0164">
           <joint name="rfj1" class="proximal"/>
           <geom class="proximal_visual"/>
-          <geom class="proximal_collision"/>
+          <geom name="rf_proximal_geom" class="proximal_collision"/>
           <body name="rf_medial" pos="0 0 0.054">
             <joint name="rfj2" class="medial"/>
             <geom class="medial_visual"/>
-            <geom class="medial_collision"/>
+            <geom name="rf_medial_geom" class="medial_collision"/>
             <body name="rf_distal" pos="0 0 0.0384">
               <joint name="rfj3" class="distal"/>
               <geom class="distal_visual"/>
-              <geom class="distal_collision"/>
+              <geom name="rf_distal_geom" class="distal_collision"/>
               <body name="rf_tip">
                 <geom class="fingertip_visual"/>
-                <geom class="soft_finger" pos="0 0 0.019"/>
+                <geom name="rf_tip" class="fingertip_collision"pos="0 0 0.019" contype="1" conaffinity="1"/>
               </body>
             </body>
           </body>
@@ -224,22 +223,22 @@
       <body name="th_base" pos="-0.0182 0.019333 -0.045987" quat="0.477714 -0.521334 -0.521334 -0.477714">
         <joint name="thj0" class="thumb_base"/>
         <geom class="visual" mesh="link_12.0_right"/>
-        <geom class="thumb_base_collision"/>
+        <geom name="th_base_geom" class="thumb_base_collision"/>
         <body name="th_proximal" pos="-0.027 0.005 0.0399">
           <joint name="thj1" class="thumb_proximal"/>
           <geom class="visual" mesh="link_13.0"/>
-          <geom class="thumb_proximal_collision"/>
+          <geom name="th_proximal_geom" class="thumb_proximal_collision"/>
           <body name="th_medial" pos="0 0 0.0177">
             <joint name="thj2" class="thumb_medial"/>
             <geom class="visual" mesh="link_14.0"/>
-            <geom class="thumb_medial_collision"/>
+            <geom name="th_medial_geom" class="thumb_medial_collision"/>
             <body name="th_distal" pos="0 0 0.0514">
               <joint name="thj3" class="thumb_distal"/>
               <geom class="visual" mesh="link_15.0"/>
-              <geom class="thumb_distal_collision"/>
+              <geom name="th_distal_geom" class="thumb_distal_collision"/>
               <body name="th_tip">
                 <geom class="thumbtip_visual"/>
-                <geom class="soft_finger" pos="0 0 0.035"/>
+                <geom name="th_tip" class="thumbtip_collision"pos="0 0 0.035" contype="1" conaffinity="1"/>
               </body>
             </body>
           </body>
