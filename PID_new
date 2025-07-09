@@ -1,0 +1,115 @@
+# pid_control.py
+
+import mujoco
+import mujoco.viewer
+import numpy as np
+
+# --- Load model ---
+model = mujoco.MjModel.from_xml_path("/home/noetic/mujoco_menagerie/wonik_allegro/scene_right.xml")
+data = mujoco.MjData(model)
+
+# --- PID control parameters ---
+Kp = np.array([50.0] * 16)   # TODO: adjustable P gains
+Kd = np.array([2.0] * 16)    # TODO: adjustable D gains
+Ki = np.array([0.0] * 16)    # TODO: integral gains, set to non-zero if needed
+
+# --- Get joint indices by name ---
+joint_names = ["ffj0", "ffj1", "ffj2", "ffj3", 
+               "mfj0", "mfj1", "mfj2", "mfj3",
+               "rfj0", "rfj1", "rfj2", "rfj3",
+               "thj0", "thj1", "thj2", "thj3"] 
+joint_qpos_ids = [model.joint(name).qposadr for name in joint_names]
+joint_dof_ids = [int(model.joint(name).dofadr) for name in joint_names]
+
+# --- Compute dynamic q_desired using Jacobian ---
+def compute_q_desired_from_end_effector_targets(model, data, joint_qpos_ids, joint_dof_ids):
+    q_desired = np.zeros(16)
+    finger_tips = ["ff_tip", "mf_tip", "rf_tip", "th_tip"]
+    tip_targets = {
+        "ff_tip": np.array([0.02913715, 0.03648598, 0.07642193]),
+        "mf_tip": np.array([-0.04880461, -0.03735421,  0.07918446]),
+        "rf_tip": np.array([ 0.03907339, -0.04705062,  0.06837442]),
+        "th_tip": np.array([4.43387936e-02, 2.89493588e-06, 7.16282414e-02])
+    }
+
+    for i, tip in enumerate(finger_tips):
+        try:
+            current_pos = data.body(tip).xpos.copy()
+            delta_x = tip_targets[tip] - current_pos
+            delta_x = np.asarray(delta_x).flatten()
+
+            J_pos = np.zeros((3, model.nv))
+            mujoco.mj_jacBodyCom(model, data, J_pos, None, model.body(tip).id)
+            idxs = np.array(joint_dof_ids[i*4:(i+1)*4], dtype=int)
+            J_finger = J_pos[:, idxs]
+            dq = J_finger.T @ delta_x
+
+            q_segment = np.array([data.qpos[j] for j in joint_qpos_ids[i*4:(i+1)*4]]).flatten()
+
+            print(f"tip={tip}, q_segment shape: {q_segment.shape}, dq shape: {dq.shape}")
+
+            q_desired[i*4:(i+1)*4] = q_segment + dq
+
+        except Exception as e:
+            print(f"Error computing q_desired for {tip}: {e}")
+
+    return q_desired
+
+# --- Initialize integral term and object tracking ---
+integral_error = np.zeros(16)
+object_pos_prev = data.body("object").xpos.copy()
+stability_counter = 0
+
+# --- Launch viewer and start simulation ---
+with mujoco.viewer.launch_passive(model, data) as viewer:
+    for step in range(1000):
+        mujoco.mj_step(model, data)
+        
+        if step * model.opt.timestep < 1.0:
+            viewer.sync()
+            continue  # 暂不控
+        
+        # --- Dynamically compute q_desired ---
+        q_desired = compute_q_desired_from_end_effector_targets(model, data, joint_qpos_ids, joint_dof_ids)
+
+        # --- Read joint state and compute PID ---
+        q = np.array([data.qpos[i] for i in joint_qpos_ids], dtype=np.float64).flatten()
+        qd = np.array([data.qvel[i] for i in joint_qpos_ids], dtype=np.float64).flatten()
+        error = q_desired.flatten() - q
+        integral_error += error * model.opt.timestep
+        torque = Kp * error - Kd * qd + Ki * integral_error
+        data.ctrl[:16] = torque
+
+        # --- Contact and stability monitoring ---
+        object_pos = data.body("object").xpos.copy()
+        object_vel = data.cvel[model.body("object").id][:3]
+        print(f"[{step}] Object position: {object_pos}, velocity norm: {np.linalg.norm(object_vel):.4f}")
+
+        contact_with_object = False
+        for i in range(data.ncon):
+            c = data.contact[i]
+            body1 = model.geom_bodyid[c.geom1]
+            body2 = model.geom_bodyid[c.geom2]
+            name1 = model.body(body1).name
+            name2 = model.body(body2).name
+            if "object" in [name1, name2]:
+                contact_with_object = True
+                break
+
+        if contact_with_object:
+            print("✅ Contact detected with object.")
+
+        pos_diff = np.linalg.norm(object_pos - object_pos_prev)
+        object_pos_prev = object_pos.copy()
+
+        if pos_diff < 1e-4 and contact_with_object:
+            stability_counter += 1
+        else:
+            stability_counter = 0
+
+        if stability_counter > 10:
+            print("✅ Object is stably grasped.")
+            break
+
+        viewer.sync()
+input("⏸️ Simulation finished. Press Enter to close the viewer...")
