@@ -1,0 +1,59 @@
+<mujoco model="Tripod_dynamic">
+  <include file="righthand soft.xml"/>
+
+  <statistic center="0 0 0" extent="0.3"/>
+
+  <visual>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <quality shadowsize="8192"/>
+    <global azimuth="130" elevation="-40"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge"
+             rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+             markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane"
+              texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+               <!-- 添加接触材质 -->
+    <material name="contact" rgba="0.8 0.6 0.4 1" reflectance="0.3"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1"/>
+    <light pos="0.3 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" pos="0 0 -0.1" size="0 0 0.05"
+          type="plane" material="groundplane"/>
+    
+    <!-- 球体 -->
+    <body name="object" pos="0.0011 -0.0243 0.1265">
+     <!--joint name="ball_slide" type="slide" axis="0 0 1" damping="20" limited="true" range="-1 1"/-->
+     	<joint name="ball_slide_x" type="slide" axis="1 0 0"damping="20" limited="true" range="-1 1"/>
+	<joint name="ball_slide_y" type="slide" axis="0 1 0"damping="20" limited="true" range="-1 1"/>
+	<joint name="ball_slide_z" type="slide" axis="0 0 1"damping="20" limited="true" range="-1 1"/>
+    
+       <geom name="ball" type="sphere" size="0.035" rgba="0.5 0.8 0.5 1" mass="0.01"
+            material="contact" solimp="0.95 0.99 0.001" solref="0.01 1"
+            friction="1.2 0.005 0.0001" condim="4"/>
+    </body>
+  </worldbody>
+   <contact>
+    <!-- 增加接触刚性 -->
+    <exclude body1="palm" body2="ff_base"/>
+    <exclude body1="palm" body2="mf_base"/>
+    <exclude body1="palm" body2="rf_base"/>
+    <exclude body1="palm" body2="th_base"/>
+    <exclude body1="palm" body2="th_proximal"/>
+    
+    
+  </contact>
+  
+  
+  <actuator>
+	<position name="ball_x" joint="ball_slide_x" ctrlrange="-1 1" ctrllimited="true"/>
+	<position name="ball_y" joint="ball_slide_y" ctrlrange="-1 1" ctrllimited="true"/>	
+	<position name="ball_z" joint="ball_slide_z" ctrlrange="-1 1" ctrllimited="true"/>
+  </actuator>
+
+</mujoco>
