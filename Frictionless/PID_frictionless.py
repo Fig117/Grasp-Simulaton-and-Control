@@ -143,9 +143,9 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
 
             # Calculate the distance to the target
             distance_to_final_target =  target_initial_pos - hand_initial_pos
-          ff_tip_control_signals = compute_control_signals(1,0.2,0.01,ff_tip_distance_to_target)
-          mf_tip_control_signals = compute_control_signals(1,0.2,0.01,mf_tip_distance_to_target)
-          rf_tip_control_signals = compute_control_signals(1,0.2,0.01,rf_tip_distance_to_target)
+          ff_tip_control_signals = compute_control_signals(3,0.2,0.02,ff_tip_distance_to_target)
+          mf_tip_control_signals = compute_control_signals(3,0.2,0.01,mf_tip_distance_to_target)
+          rf_tip_control_signals = compute_control_signals(3,0.2,0.01,rf_tip_distance_to_target)
           th_tip_control_signals = compute_control_signals(0.9,0.03,0.01,th_tip_distance_to_target)
 
           mujoco.mj_jac(model, data, ff_tip_jacp, ff_tip_jacr, data.body('ff_tip').xpos, ff_tip_idx)
