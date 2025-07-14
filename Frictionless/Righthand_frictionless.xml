@@ -63,9 +63,9 @@
           </default>
         </default>
         <default class="fingertip_collision">
-          <geom type="capsule" size="0.012 0.01" pos="0 0 0.019"solref="0.005 1" solimp="0.7 0.95 0.02" friction="0 0 0"/>
+          <geom type="capsule" size="0.012 0.01" pos="0 0 0.019"friction="0 0 0"/>
           <default class="thumbtip_collision">
-            <geom type="capsule" size="0.012 0.008" pos="0 0 0.035"solref="0.005 1" solimp="0.7 0.95 0.02"friction="0 0 0"/>
+            <geom type="capsule" size="0.012 0.008" pos="0 0 0.035"friction="0 0 0"/>
           </default>
         </default>
       </default>
