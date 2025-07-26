@@ -24,17 +24,16 @@ The final outcome shows that the robotic hand can successfully:
 ## **Project Structure**
 main/
 ├── PID_final.py # Main grasp-and-lift controller
-├── scene_right.xml # Scene file loading the Allegro hand and object
+├── scene_right.xml # Scene file including hand and object
 ├── Scene/
 │ └── wonik_allegro/
+│ ├── scene_right.xml # Includes hand and object
 │ ├── right_hand.xml # Allegro hand definition
-│ ├── scene_right.xml # Alternate scene file (also loads hand + object)
 │ ├── Right_hand_set/
-│ │ ├── Soft.xml # Soft finger configuration
-│ │ ├── Hard.xml # Hard finger configuration
-│ │ └── Frictionless.xml # Frictionless finger configuration
+│ │ ├── Soft.xml
+│ │ ├── Hard.xml
+│ │ └── Frictionless.xml
 │ └── assets/ # Meshes and textures
-│ └── allegro_hand.png # Model image
 
 ---
 
