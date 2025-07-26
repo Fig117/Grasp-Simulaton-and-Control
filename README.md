@@ -1,7 +1,7 @@
 # **Allegro Hand Grasping and Lifting Project**
 
 ### **Team Members**
-- **Tian Qing**
+- **Tian Qin**
 - **Chenhao Guan**
 - **Shuowen Li**
 
@@ -17,7 +17,7 @@ This project demonstrates object grasping and manipulation using the **Allegro r
 
 The final outcome shows that the robotic hand can successfully:
 1. **Move toward a given object** in 3D space;
-2. **Perform a coordinated grasp** using all four fingers;
+2. **Perform a Medium Wrap grasp** using all four fingers;
 3. **Lift the object** to a target height while maintaining grasp stability.
 
 ---
@@ -25,7 +25,6 @@ The final outcome shows that the robotic hand can successfully:
 main/
 ├── PID_final.py # Main grasp-and-lift controller
 ├── scene_right.xml # Scene file loading the Allegro hand and object
-├── pso_train.py, run_and_plot.py # (optional extra scripts, not main control)
 ├── Scene/
 │ └── wonik_allegro/
 │ ├── right_hand.xml # Allegro hand definition
@@ -55,4 +54,7 @@ main/
 
 ```bash
 python PID_final.py
-
+Selecting Finger Type (Soft / Hard / Frictionless)
+Finger models are located in:
+Scene/wonik_allegro/Right_hand_set/
+Make sure the selection in Python matches the finger model in the scene file.
