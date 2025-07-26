@@ -21,7 +21,21 @@ The final outcome shows that the robotic hand can successfully:
 3. **Lift the object** to a target height while maintaining grasp stability.
 
 ---
-
+## **Project Structure**
+main/
+├── PID_final.py # Main grasp-and-lift controller
+├── scene_right.xml # Scene file loading the Allegro hand and object
+├── pso_train.py, run_and_plot.py # (optional extra scripts, not main control)
+├── Scene/
+│ └── wonik_allegro/
+│ ├── right_hand.xml # Allegro hand definition
+│ ├── scene_right.xml # Alternate scene file (also loads hand + object)
+│ ├── Right_hand_set/
+│ │ ├── Soft.xml # Soft finger configuration
+│ │ ├── Hard.xml # Hard finger configuration
+│ │ └── Frictionless.xml # Frictionless finger configuration
+│ └── assets/ # Meshes and textures
+│ └── allegro_hand.png # Model image
 
 ---
 
@@ -35,13 +49,10 @@ The final outcome shows that the robotic hand can successfully:
 ---
 
 ## **How to Run**
+1. Make sure [MuJoCo](https://mujoco.org/) and `mujoco-py` or `mujoco` bindings are properly installed.
 
-1. Place all files under proper structure and make sure **MuJoCo** is installed correctly.  
-2. Confirm that `Soft.xml` is included in your scene (`scene_right.xml`).  
-3. Run:
+2. From the `main/` directory, run the following command:
 
 ```bash
 python PID_final.py
-# or
-python finalproject.py
 
