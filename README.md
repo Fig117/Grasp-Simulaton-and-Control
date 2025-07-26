@@ -12,7 +12,7 @@
 This project demonstrates object grasping and manipulation using the **Allegro right hand** in the **MuJoCo physics engine**. The system integrates:
 
 - **A physics-based simulation scene**,  
-- **A biomimetic hand model**, and  
+- **A 16 DoF hand model**, and  
 - **A Python-based control system** implementing **PID** and **Jacobian-based inverse kinematics**.
 
 The final outcome shows that the robotic hand can successfully:
