@@ -43,5 +43,5 @@ python PID_final.py
 
 ## **Selecting Finger Type (Soft / Hard / Frictionless)**
 Finger models are located in:
-Scene/wonik_allegro/Right_hand_set/
+Scene/wonik_allegro/
 Make sure the selection in Python matches the finger model in the scene file.
