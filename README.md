@@ -21,21 +21,7 @@ The final outcome shows that the robotic hand can successfully:
 3. **Lift the object** to a target height while maintaining grasp stability.
 
 ---
-## **Project Structure**
-main/
-├── PID_final.py # Main grasp-and-lift controller
-├── scene_right.xml # Scene file including hand and object
-├── Scene/
-│ └── wonik_allegro/
-│ ├── scene_right.xml # Includes hand and object
-│ ├── right_hand.xml # Allegro hand definition
-│ ├── Right_hand_set/
-│ │ ├── Soft.xml
-│ │ ├── Hard.xml
-│ │ └── Frictionless.xml
-│ └── assets/ # Meshes and textures
 
----
 
 ## **Features**
 
