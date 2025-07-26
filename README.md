@@ -39,7 +39,9 @@ The final outcome shows that the robotic hand can successfully:
 
 ```bash
 python PID_final.py
-Selecting Finger Type (Soft / Hard / Frictionless)
+
+
+## **Selecting Finger Type (Soft / Hard / Frictionless)**
 Finger models are located in:
 Scene/wonik_allegro/Right_hand_set/
 Make sure the selection in Python matches the finger model in the scene file.
