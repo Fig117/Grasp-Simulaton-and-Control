@@ -70,15 +70,15 @@
         </default>
       </default>
 
-      <default class="rootx_c">
+      <default class="slider_x">
         <joint axis="1 0 0" range="-20.0 20.0"/>
         <position ctrlrange="-5.0 5.0" kp="100"/>
       </default>
-      <default class="rooty_c">
+      <default class="slider_y">
         <joint axis="0 1 0" range="-20.0 20."/>
         <position ctrlrange="-5.0 5.0" kp="100"/>
       </default>
-      <default class="rootz_c">
+      <default class="slider_z">
         <joint axis="0 0 1" range="-20.0 20.0"/>
         <position ctrlrange="-5.0 5.0" kp="100"/>
       </default>
@@ -137,9 +137,9 @@
   <worldbody>
     <body name="rhand" pos = "0 0.5 0.12" quat="1 0 0 0" childclass="allegro_right">
     <!--<geom type = "sphere" size =".015" rgba = ".8 .2 .1 1" pos = "0 0 0.12"/>-->
-    <joint name = "rootx" type = "slide" damping = "100" pos = "0 0 0" axis = "1 0 0" range = "-20 20"/>
-    <joint name = "rooty" type = "slide" damping = "100" pos = "0 0 0" axis = "0 1 0" range = "-20 20"/>
-    <joint name = "rootz" type = "slide" damping = "100" pos = "0 0 0" axis = "0 0 1" range = "-20 20"/>
+    <joint name = "slider_x" type = "slide" damping = "100" pos = "0 0 0" axis = "1 0 0" range = "-20 20"/>
+    <joint name = "slider_y" type = "slide" damping = "100" pos = "0 0 0" axis = "0 1 0" range = "-20 20"/>
+    <joint name = "slider_z" type = "slide" damping = "100" pos = "0 0 0" axis = "0 0 1" range = "-20 20"/>
       <!-- <body name="palm" pos = "-0.1 0 0" quat="0.5 0.5 0 0" childclass="allegro_right"> -->
       <body name="palm" pos = "-0.1 0 0" quat="0.5 0.5 0 0" childclass="allegro_right">
         <!-- <inertial mass="0.4154" pos="0 0 0.0475" diaginertia="1e-4 1e-4 1e-4"/> -->
@@ -258,9 +258,9 @@
   </contact>
 
   <actuator>
-    <position name="rootx" joint="rootx" class="rootx_c"/>
-    <position name="rooty" joint="rooty" class="rooty_c"/>
-    <position name="rootz" joint="rootz" class="rootz_c"/>
+    <position name="slider_x" joint="slider_x" class="slider_x"/>
+    <position name="slider_y" joint="slider_y" class="slider_y"/>
+    <position name="slider_z" joint="slider_z" class="slider_z"/>
     <position name="ffa0" joint="ffj0" class="base"/>
     <position name="ffa1" joint="ffj1" class="proximal"/>
     <position name="ffa2" joint="ffj2" class="medial"/>
