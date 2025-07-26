@@ -262,9 +262,9 @@
   </contact>
 
   <actuator>
-    <position name="rootx" joint="rootx" class="rootx_c"/>
-    <position name="rooty" joint="rooty" class="rooty_c"/>
-    <position name="rootz" joint="rootz" class="rootz_c"/>
+    <position name="slider_x" joint="rootx" class="rootx_c"/>
+    <position name="slider_y" joint="rooty" class="rooty_c"/>
+    <position name="slider_z" joint="rootz" class="rootz_c"/>
     <position name="ffa0" joint="ffj0" class="base"/>
     <position name="ffa1" joint="ffj1" class="proximal"/>
     <position name="ffa2" joint="ffj2" class="medial"/>
