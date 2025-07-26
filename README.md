@@ -22,21 +22,6 @@ The final outcome shows that the robotic hand can successfully:
 
 ---
 
-## **File Structure**
-Project/
-├── Sceneproject.txt # Main scene including hand and movable object
-├── Righthandproject.txt # Full Allegro hand model (right)
-├── Soft.xml # Soft-finger configuration used in the simulation
-├── PID_final.py # Grasping and lifting controller (PID + Jacobian)
-├── finalproject.py # Extended grasp-and-lift controller with contact analysis
-
-- **Sceneproject.txt**: Main MuJoCo XML scene file, referencing `right_hand.xml` to include the full Allegro model and a red box as the grasp target.  
-- **Righthandproject.txt**: Detailed model of the **right Allegro hand**, including all finger joints, actuators, and sensors.  
-- **Soft.xml**: One of the three finger types (**Soft / Hard / Frictionless**); this is the one used in `scene_right.xml`.  
-- **PID_final.py**: Controls the hand’s palm motion and finger grasping using **PID** and **inverse kinematics**.  
-- **finalproject.py**: An extended version with **contact force monitoring** and **object lifting** after grasp.  
-
-> 💡 **Note**: We demonstrate **one Allegro hand** in the scene, but the framework supports multiple hands (not included here).
 
 ---
 
