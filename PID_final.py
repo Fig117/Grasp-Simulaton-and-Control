@@ -133,10 +133,10 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             th_tip_control_signals = compute_control_signals(0.9, 0.03, 0.02, th_tip_distance_to_target)
             """
             # PID for Frinctionless finger
-            ff_tip_control_signals = compute_control_signals(3, 0.2, 0.01, ff_tip_distance_to_target)
-            mf_tip_control_signals = compute_control_signals(3, 0.2, 0.01, mf_tip_distance_to_target)
-            rf_tip_control_signals = compute_control_signals(3, 0.2, 0.01, rf_tip_distance_to_target)
-            th_tip_control_signals = compute_control_signals(0.9, 0.03, 0.01, th_tip_distance_to_target)
+            ff_tip_control_signals = compute_control_signals(4, 0.1, 0.02, ff_tip_distance_to_target)
+            mf_tip_control_signals = compute_control_signals(4, 0.1, 0.02, mf_tip_distance_to_target)
+            rf_tip_control_signals = compute_control_signals(4, 0.1, 0.02, rf_tip_distance_to_target)
+            th_tip_control_signals = compute_control_signals(0.9, 0.03, 0.02, th_tip_distance_to_target)
             
             # Compute the translational (jacp) and rotational (jacr) Jacobians
             # For each fingertip, at the current Cartesian position
