@@ -26,7 +26,7 @@ The final outcome shows that the robotic hand can successfully:
 ## **Features**
 
 - **PID + IK Grasping**: Fingertips are driven to targets using PID control in Cartesian space, mapped to joints via Jacobian pseudoinverse.  
-- **Grasp Detection**: Once all fingers reach within threshold, grasp is marked successful.  
+- **Grasp Detection**: Once all fingers reach within threshold, grasp is marked successfully.  
 - **Post-Grasp Lifting**: After grasp, the hand lifts the object vertically to a fixed height.  
 - **Real-Time Visualization**: MuJoCo viewer renders the motion; contact visualization is supported.  
 

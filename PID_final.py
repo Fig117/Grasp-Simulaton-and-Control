@@ -25,7 +25,7 @@ distance_to_target = target_initial_pos - hand_initial_pos
 
 init_flag = False
 grasp_flag = False
-z_reached = False  # flag for slider_Z after grasp
+z_reached = False  # Flag for slider_Z after grasp
 ff_flag = False
 mf_flag = False
 rf_flag = False
@@ -109,22 +109,24 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             rf_flag = np.all(np.abs(rf_tip_distance_to_target) < error_fingers)
             th_flag = np.all(np.abs(th_tip_distance_to_target) < error_fingers + 0.01)
             
-             # If all fingers are close enough, grasp is considered successful
+            # If all fingers are close enough, grasp is considered successful
             if ff_flag and mf_flag and rf_flag and th_flag:
                 grasp_flag = True
                 print("grasped done")
 
             ## Choose one of the following PID configurations
-            ## depending on your finger model (Hard / Soft / Frictionless)
+            ## Depending on your finger model (Hard / Soft / Frictionless)
             ## Only uncomment the block that corresponds to your setup
 
-            """# PID for Hard finger
+            # PID for Hard finger
+            """
             ff_tip_control_signals = compute_control_signals(3, 0.2, 0.02, ff_tip_distance_to_target)
             mf_tip_control_signals = compute_control_signals(3, 0.2, 0.01, mf_tip_distance_to_target)
             rf_tip_control_signals = compute_control_signals(3, 0.2, 0.01, rf_tip_distance_to_target)
             th_tip_control_signals = compute_control_signals(0.9, 0.03, 0.01, th_tip_distance_to_target)
             """
-            """# PID for Soft finger
+            # PID for Soft finger
+            """
             ff_tip_control_signals = compute_control_signals(1.5, 0.2, 0.02, ff_tip_distance_to_target)
             mf_tip_control_signals = compute_control_signals(1.5, 0.2, 0.02, mf_tip_distance_to_target)
             rf_tip_control_signals = compute_control_signals(1.5, 0.2, 0.02, rf_tip_distance_to_target)
@@ -137,7 +139,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             th_tip_control_signals = compute_control_signals(0.9, 0.03, 0.01, th_tip_distance_to_target)
             
             # Compute the translational (jacp) and rotational (jacr) Jacobians
-            # for each fingertip, at the current Cartesian position
+            # For each fingertip, at the current Cartesian position
             mujoco.mj_jac(model, data, ff_tip_jacp, ff_tip_jacr, ff_tip_current_pos, ff_tip_idx)
             mujoco.mj_jac(model, data, mf_tip_jacp, mf_tip_jacr, mf_tip_current_pos, mf_tip_idx)
             mujoco.mj_jac(model, data, rf_tip_jacp, rf_tip_jacr, rf_tip_current_pos, rf_tip_idx)
@@ -149,9 +151,9 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             rf_tip_jacp = rf_tip_jacp.reshape((3, model.nv))
             th_tip_jacp = th_tip_jacp.reshape((3, model.nv))
             
-            ##Inverse Kinematics Control
+            ## Inverse Kinematics Control
             # Use the pseudo-inverse of the Jacobian to map Cartesian control signals
-            # into joint space velocities/forces
+            # Into joint space velocities/forces
             # This is a basic Jacobian transpose or pseudo-inverse controller  
             ff_tip_joint = np.linalg.pinv(ff_tip_jacp) @ ff_tip_control_signals
             mf_tip_joint = np.linalg.pinv(mf_tip_jacp) @ mf_tip_control_signals
@@ -172,7 +174,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             ))
             data.ctrl[3:] = control_signals_joint_space
 
-         # Rise to z = 0.2 after a steady grip
+        # Rise to z = 0.2 after a steady grip
         if grasp_flag and not z_reached:
             current_z = data.qpos[2]
             z_error = 0.2 - current_z
