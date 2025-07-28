@@ -82,6 +82,7 @@ def compute_control_signals(kp, ki, kd, error):
 #     # ==== New disturbance rejection term ====
 #     disturbance = error - prev_error
 #     disturbance_feedback = 0.001 * disturbance 
+#     return = p+i+d+disturbance_feedback
 
 error_fingers = 0.025
 
