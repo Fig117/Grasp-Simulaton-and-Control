@@ -72,6 +72,16 @@ def compute_control_signals(kp, ki, kd, error):
     d = kd * (error - prev_error)
     prev_error = error
     return p + i + d
+# def compute_control_signals(kp, ki, kd, error):
+#     global integral_error, prev_error
+#     # Basic PID terms
+#     p = kp*error
+#     integral_error += error
+#     i = ki * integral_error
+#     d = kd * (error - prev_error)
+#     # ==== New disturbance rejection term ====
+#     disturbance = error - prev_error
+#     disturbance_feedback = 0.001 * disturbance 
 
 error_fingers = 0.025
 
